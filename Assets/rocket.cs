@@ -10,39 +10,38 @@ public class rocket : MonoBehaviour {
     Rigidbody rigidBody;
     AudioSource audioSource;
     Transform transform;
-    [SerializeField] float rcsRotation = 200f;
-    [SerializeField] public float rcsThrust = 25f;
-    [SerializeField] float Death_delay = 1f;
-    [SerializeField] float nextLevel_delay = 2f;
-    [SerializeField] AudioClip mainEngine;
-    [SerializeField] AudioClip deathExplosion;
-    [SerializeField] AudioClip victory;
+    float rcsRotation = 200f;
+    public float rcsThrust = 25f;
+    float Death_delay = 1f;
+    float nextLevel_delay = 2f;
+    public AudioClip mainEngine;
+    public AudioClip deathExplosion;
+    public AudioClip victory;
 
-    [SerializeField] ParticleSystem mainEngineParticles;
-    [SerializeField] ParticleSystem deathExplosionParticles;
-    [SerializeField] ParticleSystem victoryParticles;
+    public ParticleSystem mainEngineParticles;
+    public ParticleSystem deathExplosionParticles;
+    public ParticleSystem victoryParticles;
 
     bool collisionDisabled = false;
+    
     enum State { Alive, Dying, Transcending }
     State state = State.Alive;
-    // Use this for initialization
+    private bool isNotAlive => state != State.Alive;
+
     void Start () {
         rigidBody = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
         transform = GetComponent<Transform>();
     }
 	
-	// Update is called once per frame
 	void Update () {
         if (state == State.Alive)
         {
             Thrust();
-            Rotate(); //use BetterRotate() to rotate with torques
+            Rotate(); 
         }
         if (Debug.isDebugBuild)
         { RespondToDebugKeys(); }
-        
-        //BetterRotate();
 
     }
 
@@ -54,44 +53,22 @@ public class rocket : MonoBehaviour {
         { collisionDisabled = !collisionDisabled; }
     }
 
-    //Rotate with torques... feels awkward to control
-    private void BetterRotate()
-    {
-
-
-        float rotationSpeed = Time.deltaTime * rcsRotation;
-        if ((Input.GetKey(KeyCode.A)) && (!Input.GetKey(KeyCode.D)))
-        {
-            rigidBody.AddRelativeTorque(Vector3.forward * rotationSpeed);
-        }
-        if ((Input.GetKey(KeyCode.D)) && (!Input.GetKey(KeyCode.A)))
-        {
-            rigidBody.AddRelativeTorque(-Vector3.forward * rotationSpeed);
-        }
-
-    }
 
     void OnCollisionEnter(Collision collision)
     {
-        if (state != State.Alive || collisionDisabled) { return; }
+        
+        if (isNotAlive || collisionDisabled) { return; }
         switch (collision.gameObject.tag)
         {
             case "Friendly":
                 break;
             case "Finish":
-                // do nothing
                 Victory();
-                break;
-            case "Fuel":
-                //add fuel
-                print("Fuel");
                 break;
             case "Last Finish":
                 LastVictory();
-                
                 break;
             default:
-                //kill the player
                 Dying();
                 break;
 
