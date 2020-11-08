@@ -81,20 +81,22 @@ public class rocket : MonoBehaviour {
     private void LastVictory()
     {
         state = State.Transcending;
-        audioSource.Stop();
-        mainEngineParticles.Stop();
+        StopEngine();
         audioSource.PlayOneShot(victory);
         victoryParticles.Play();
         Invoke("Death", nextLevel_delay);
     }
 
-
+    private void StopEngine()
+    {
+        audioSource.Stop();
+        mainEngineParticles.Stop();
+    }
 
     private void Dying()
     {
         state = State.Dying;
-        audioSource.Stop();
-        mainEngineParticles.Stop();
+        StopEngine();
         audioSource.PlayOneShot(deathExplosion);
         deathExplosionParticles.Play();
         Invoke("Death", Death_delay);
@@ -104,8 +106,7 @@ public class rocket : MonoBehaviour {
     private void Victory()
     {
         state = State.Transcending;
-        audioSource.Stop();
-        mainEngineParticles.Stop();
+        StopEngine();
         audioSource.PlayOneShot(victory);
         victoryParticles.Play();
         Invoke("LoadNextLevel", nextLevel_delay);
@@ -119,11 +120,7 @@ public class rocket : MonoBehaviour {
         SceneManager.LoadScene(index + 1);
     }
 
-    private void Death()
-    {
-        
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
+    private void Death() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
     private void Rotate()
     {
@@ -168,8 +165,5 @@ public class rocket : MonoBehaviour {
             mainEngineParticles.Play();
         }
     }
-    public void StartAgain()
-    {
-        SceneManager.LoadScene("Level 1");
-    }
+    public void StartAgain() => SceneManager.LoadScene("Level 1");
 }
